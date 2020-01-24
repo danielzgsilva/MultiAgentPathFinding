@@ -12,8 +12,11 @@ class ReservationTable:
         self.table = [[[True for _ in range(cols)] for _ in range(rows)] for _ in range(time)]
 
     def set_blocked(self, x, y, t):
-        if t < self.time and x > 0 and y > 0 and x < self.cols and y < self.rows:
+        if t < self.time and x >= 0 and y >= 0 and x < self.cols and y < self.rows:
             self.table[t][y][x] = False
         else:
             assert ValueError('Reservation out of range')
+
+    def is_blocked(self, x, y, t):
+        return not self.table[t][y][x]
 

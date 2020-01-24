@@ -13,7 +13,9 @@ def get_path(cur, start):
     Backtracks the path starting at the current node using the nodes previous pointers
     '''
     path = []
+    print('-> backtracking')
     while cur != start:
+        print('-> ', cur.t, cur.x, cur.y)
         path.append((cur.x, cur.y, cur.t))
         cur = cur.previous
 

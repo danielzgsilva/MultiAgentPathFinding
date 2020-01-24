@@ -33,6 +33,7 @@ class AStarPathFinder:
                 for t in range(self.reservations.time):
                     z = self.map.grid[y][x]
                     nodes[t][y][x] = Node(x, y, z, t)
+
         #print('Finished creating nodes in {}'.format(timer() - start))
 
         start_time = timer()
@@ -46,7 +47,6 @@ class AStarPathFinder:
         start.g = 0
         start.h = start.f = euclidean(start, end)
 
-        count = 1
         heapq.heappush(open, (start.f, (sx, sy, 0)))
 
         while open:
@@ -61,10 +61,14 @@ class AStarPathFinder:
             closed.add(cur)
 
             neighbors = self.get_valid_neighbors(cur, nodes, start)
+            print('current: {}, {}, {}'.format(cur.t, cur.x, cur.y))
             for neighbor in neighbors:
+                print(neighbor.t, neighbor.x, neighbor.y)
                 if not self.is_valid_move(cur, neighbor):
+                    print('wasnt valid')
                     continue
-
+                else:
+                    print('was valid')
                 nx, ny, nt = neighbor.x, neighbor.y, neighbor.t
                 tent_g = cur.g + euclidean(cur, neighbor)
 
@@ -76,7 +80,6 @@ class AStarPathFinder:
                     neighbor.g = tent_g
                     neighbor.h = euclidean(neighbor, end)
                     neighbor.f = neighbor.g + neighbor.h
-                    count += 1
                     heapq.heappush(open, (neighbor.f, (nx, ny, nt)))
 
         print('No solution found in {} time steps'.format(self.reservations.time))
@@ -127,13 +130,27 @@ class AStarPathFinder:
         dx = abs(cur.x - neighbor.x)
         dy = abs(cur.y - neighbor.y)
 
-        # Check reservation table
+        # Double check reservation table
         if not self.reservations.table[neighbor.t][neighbor.y][neighbor.x]:
+            print('tried to move directly onto something..')
+            return False
+
+        # Prevent agents moving through one another
+        if self.reservations.is_blocked(neighbor.x, neighbor.y, cur.t) and self.reservations.is_blocked(cur.x, cur.y, neighbor.t):
+            #print('caught linear collision')
             return False
 
         # Diagonal move
         if dx == 1 and dy == 1:
-            if self.map.grid[cur.y][neighbor.x] - self.map.grid[cur.y][cur.x] > 2 or self.map.grid[neighbor.y][cur.x] - self.map.grid[cur.y][cur.x] > 2:
+            # Check for mountains or craters adjacent to diagonal move
+            if abs((self.map.grid[cur.y][neighbor.x] - self.map.grid[cur.y][cur.x]) > 2 or abs(self.map.grid[neighbor.y][cur.x] - self.map.grid[cur.y][cur.x]) > 2 or
+
+            # Prevent agents moving through one another diagonally
+            (self.reservations.is_blocked(neighbor.x, neighbor.y, cur.t) and self.reservations.is_blocked(cur.x, neighbor.y, neighbor.t)) or
+            (self.reservations.is_blocked(neighbor.x, cur.y, neighbor.t) and self.reservations.is_blocked(cur.x, neighbor.y, cur.t))):
+               # print('caught diagonal collision')
                 return False
+
+
 
         return True

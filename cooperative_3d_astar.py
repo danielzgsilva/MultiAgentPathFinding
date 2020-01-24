@@ -42,15 +42,16 @@ class CooperativePathFinder:
             # Record this agent's movement in the reservation table
             if path is not None:
                 for x, y, t in path[1:]:
+                    print('-> set blocked: ', t, x, y)
                     reservations.set_blocked(x, y, t)
-                    reservations.set_blocked(x, y, t+1)
+                    #reservations.set_blocked(x, y, t+1)
 
                 # Fill the remaining time slots in the reservation table with the agent's final location
                 fx, fy, ft = path[-1]
                 ft += 1
                 while ft < self.max_time:
                     print('does this?')
-                    reservations.table[ft][fy][fx] = False
+                    reservations.set_blocked(fx, fy, ft)
                     ft += 1
 
         return paths
