@@ -1,31 +1,11 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 import numpy as np
-import noise
-import random as rand
 import os
 from node import Node
 import cv2
 
 from utils import *
-
-def random_map(cols, rows):
-    '''
-    Generates a random elevation map using Perlin noise
-    '''
-    z_grid = np.empty((rows, cols))
-
-    y_cnt = rand.random()
-    for i in range(rows):
-        x_cnt = 0.0
-        for j in range(cols):
-            z_grid[i][j] = (noise.pnoise2(x_cnt, y_cnt, octaves=2, persistence=0.5, \
-                                          lacunarity=2.0, repeatx=100, repeaty=100) * 30)
-
-            x_cnt += 0.03
-        y_cnt += 0.03
-
-    return z_grid
 
 class ElevationMap:
     '''
@@ -46,7 +26,7 @@ class ElevationMap:
 
             self.grid = initial_grid
         else:
-            self.grid = random_map(cols, rows)
+            self.grid = terrain_map(cols, rows)
 
     def animate(self, agents, paths, vid_path, t):
         for path in paths.values():
@@ -112,7 +92,7 @@ class ElevationMap:
         plt.axis(aspect='image');
 
         for (j, i), label in np.ndenumerate(self.grid):
-            plt.text(i, j, np.round(label, 2), ha='center', va='center', fontsize=8)
+            plt.text(x=i, y=j, s=np.round(label, 0), ha='center', va='center', fontsize=8)
 
         plt.show()
 

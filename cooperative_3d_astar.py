@@ -4,13 +4,15 @@ from reservation_table import ReservationTable
 from agent import Agent
 import os
 from timeit import default_timer as timer
-import numpy as np
+from simulation import OpenGl_Viz
 
 class CooperativePathFinder:
     def __init__(self, map, agents, max_time):
         self.map = map
         self.agents = agents
         self.max_time = max_time
+        self.viz = OpenGl_Viz(map)
+        self.viz.max_time = max_time
 
     def find_paths(self):
 
@@ -21,15 +23,18 @@ class CooperativePathFinder:
         #print(np.array(reservations.table))
 
         #print('Created reservation table in {}'.format(timer() - start))
+        paths = {}
 
         # Initialize agent start locations
-        for agent in agents:
-            reservations.table[0][agent.sy][agent.sx] = False
+        for agent in self.agents:
+            paths[agent.num] = []
+            for t in range(reservations.time):
+                reservations.set_blocked(agent.sx, agent.sy, t)
 
-        paths = {}
+        self.viz.initialize(self.agents)
+
         print('Planning paths for {} agents'.format(len(agents)))
-        for agent in agents:
-            print(np.array(reservations.table))
+        for agent in self.agents:
             print('Agent {} starting at {} going to {}'.format(agent.num, (agent.sx, agent.sy), (agent.fx, agent.fy)))
             path_finder = AStarPathFinder(reservations, self.map)
 
@@ -40,25 +45,26 @@ class CooperativePathFinder:
             paths[agent.num] = path
 
             # Record this agent's movement in the reservation table
-            if path is not None:
-                for x, y, t in path[1:]:
-                    print('-> set blocked: ', t, x, y)
-                    reservations.set_blocked(x, y, t)
-                    #reservations.set_blocked(x, y, t+1)
+            for x, y, t in path[1:]:
+                reservations.set_blocked(x, y, t)
+                reservations.set_blocked(x, y, t + 1)
+                reservations.set_blocked(x, y, t - 1)
+                reservations.unblock(agent.sx, agent.sy, t)
 
-                # Fill the remaining time slots in the reservation table with the agent's final location
-                fx, fy, ft = path[-1]
+            # Fill the remaining time slots in the reservation table with the agent's final location
+            fx, fy, ft = path[-1]
+            ft += 1
+            while ft < self.max_time:
+                reservations.set_blocked(fx, fy, ft)
+                reservations.unblock(agent.sx, agent.sy, ft)
                 ft += 1
-                while ft < self.max_time:
-                    print('does this?')
-                    reservations.set_blocked(fx, fy, ft)
-                    ft += 1
 
+        self.viz.animate(paths)
         return paths
 
 if __name__ == "__main__":
-    rows = 2
-    cols = 2
+    rows = 20
+    cols = 20
     # Create random elevation map
     map = ElevationMap(w=400, h=400, rows=rows, cols=cols, initial_grid=None)
 
@@ -66,8 +72,8 @@ if __name__ == "__main__":
     agents = list()
     agents.append(Agent(0, 0, 0, cols-1, rows-1))
     agents.append(Agent(1, 0, rows-1, cols-1, 0))
-    '''agents.append(Agent(2, cols-2, rows-1, 0, 1))
-    agents.append(Agent(3, cols-1, 1, 1, rows - 1))'''
+    '''agents.append(Agent(2, cols-1, 1, 1, rows - 1))
+    agents.append(Agent(3, cols-2, rows-1, 0, 1))'''
 
     # Arbitrary max time limit
     max_time = (rows + cols)
@@ -77,6 +83,6 @@ if __name__ == "__main__":
     paths = agent_planner.find_paths()
 
     # Display map and paths
-    vid_path = os.path.join(os.getcwd(), 'simulations')
-    map.animate(agents, paths, vid_path, agent_planner.max_time)
-    map.show_grid(agents, paths)
+    #vid_path = os.path.join(os.getcwd(), 'simulations')
+    #map.animate(agents, paths, vid_path, agent_planner.max_time)
+    #map.show_grid(agents, paths)

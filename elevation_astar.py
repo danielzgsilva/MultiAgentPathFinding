@@ -50,9 +50,11 @@ class AStarPathFinder:
         heapq.heappush(open, (start.f, (sx, sy, 0)))
 
         while open:
+            # Move to node with the smallest f value
             cx, cy, ct = heapq.heappop(open)[1]
             cur = nodes[ct][cy][cx]
 
+            # Goal reached
             if cur == end:
                 print('Path found in {}'.format(timer() - start_time))
                 path = get_path(cur, start)
@@ -60,15 +62,14 @@ class AStarPathFinder:
 
             closed.add(cur)
 
+            # Look at the current node's neighbors
             neighbors = self.get_valid_neighbors(cur, nodes, start)
-            print('current: {}, {}, {}'.format(cur.t, cur.x, cur.y))
+
             for neighbor in neighbors:
-                print(neighbor.t, neighbor.x, neighbor.y)
+                # Prevent moving to a node that conflicts with another agent's path
                 if not self.is_valid_move(cur, neighbor):
-                    print('wasnt valid')
                     continue
-                else:
-                    print('was valid')
+
                 nx, ny, nt = neighbor.x, neighbor.y, neighbor.t
                 tent_g = cur.g + euclidean(cur, neighbor)
 
@@ -83,7 +84,7 @@ class AStarPathFinder:
                     heapq.heappush(open, (neighbor.f, (nx, ny, nt)))
 
         print('No solution found in {} time steps'.format(self.reservations.time))
-        return None
+        return [(start.x, start.y, t) for t in range(self.reservations.time)]
 
     def get_valid_neighbors(self, cur, nodes, start):
         '''
@@ -132,7 +133,7 @@ class AStarPathFinder:
 
         # Double check reservation table
         if not self.reservations.table[neighbor.t][neighbor.y][neighbor.x]:
-            print('tried to move directly onto something..')
+            #print('tried to move directly onto something..')
             return False
 
         # Prevent agents moving through one another
