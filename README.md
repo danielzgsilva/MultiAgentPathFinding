@@ -22,10 +22,10 @@ Navigate to the project's root and install dependencies into a conda environment
 `conda env create -f environment.yml`
 
 Activate the environment
-`conda activate path_finding'
+`conda activate path_finding`
 
 Run the visualization with
-`python run.py'
+`python run.py`
 
 Available commands are:
 - **--num_agents** | number of agents to spawn into the world | REQUIRED
