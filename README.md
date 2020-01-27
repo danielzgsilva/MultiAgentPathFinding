@@ -2,13 +2,13 @@
 
 **This is a multi-agent path finding visualization that works with 3D elevation maps**
 -  Implements cooperative A* MAPF algorithm in 3 dimensions
-  - http://www0.cs.ucl.ac.uk/staff/D.Silver/web/Applications_files/coop-path-AIIDE.pdf
+   - http://www0.cs.ucl.ac.uk/staff/D.Silver/web/Applications_files/coop-path-AIIDE.pdf
 -  Leverages open simplex noise to generate realistic elevation maps
    - Supports the creation of four different biomes: plains, mountains, canyons, and all three combined
 - Visualization built using PyQtGraph and OpenGL
 
 <p align="center">Here's what it looks like!<br>
-  <img src='example.PNG' alt='An example visualization' />
+  <img src='example.PNG' width="200" height="200" alt='An example visualization' />
 </p>
 
 ## Usage
@@ -32,7 +32,6 @@ Available commands are:
                  
 Run the visualization like so:  
 `python run.py --num_agents 2 --starts 0,0 5,5 --goals 49,49 45,45 --max_time 30`
-
 
 ## Work in progress:
 - Creating PyQt GUI
