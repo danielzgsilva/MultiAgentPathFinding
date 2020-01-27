@@ -2,7 +2,6 @@ from elevation_astar import AStarPathFinder
 from map import ElevationMap
 from reservation_table import ReservationTable
 from agent import Agent
-import os
 from timeit import default_timer as timer
 from simulation import OpenGl_Viz
 
@@ -35,11 +34,11 @@ class CooperativePathFinder:
 
         print('Planning paths for {} agents'.format(len(agents)))
         for agent in self.agents:
-            print('Agent {} starting at {} going to {}'.format(agent.num, (agent.sx, agent.sy), (agent.fx, agent.fy)))
+            print('--> Agent {} starting at {} going to {}'.format(agent.num, (agent.sx, agent.sy), (agent.fx, agent.fy)))
             path_finder = AStarPathFinder(reservations, self.map)
 
             # Run single agent a* for each agent
-            path = path_finder.find_path(agent.sx, agent.sy, agent.fx, agent.fy)
+            path = path_finder.find_path(agent, self.viz)
 
             # Save the path for each agent
             paths[agent.num] = path
@@ -59,10 +58,13 @@ class CooperativePathFinder:
                 reservations.unblock(agent.sx, agent.sy, ft)
                 ft += 1
 
-        self.viz.animate(paths)
+        self.viz.simulate(paths)
         return paths
 
 if __name__ == "__main__":
+    options = SVHN_Options()
+    opts = options.parse()
+
     rows = 20
     cols = 20
     # Create random elevation map
@@ -71,8 +73,8 @@ if __name__ == "__main__":
     # Create some agents
     agents = list()
     agents.append(Agent(0, 0, 0, cols-1, rows-1))
-    agents.append(Agent(1, 0, rows-1, cols-1, 0))
-    '''agents.append(Agent(2, cols-1, 1, 1, rows - 1))
+    '''agents.append(Agent(1, 0, rows-1, cols-1, 0))
+    agents.append(Agent(2, cols-1, 1, 1, rows - 1))
     agents.append(Agent(3, cols-2, rows-1, 0, 1))'''
 
     # Arbitrary max time limit

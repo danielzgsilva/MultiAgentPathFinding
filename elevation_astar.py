@@ -18,7 +18,7 @@ class AStarPathFinder:
         # Only cardinal directions
         # self.neighbors = [(0,1),(0,-1),(1,0),(-1,0)]
 
-    def find_path(self, sx, sy, fx, fy):
+    def find_path(self, agent, viz):
         '''
         Finds the least cost path from start to finish coordinates on an elevation map
         '''
@@ -37,27 +37,30 @@ class AStarPathFinder:
         #print('Finished creating nodes in {}'.format(timer() - start))
 
         start_time = timer()
-        print('Begun pathfinding at {}'.format(start))
         open = []
         closed = set()
 
-        start = nodes[0][sy][sx]
-        end = nodes[self.reservations.time - 1][fy][fx]
+        start = nodes[0][agent.sy][agent.sx]
+        end = nodes[self.reservations.time - 1][agent.fy][agent.fx]
 
         start.g = 0
         start.h = start.f = euclidean(start, end)
 
-        heapq.heappush(open, (start.f, (sx, sy, 0)))
+        heapq.heappush(open, (start.f, (agent.sx, agent.sy, 0)))
 
         while open:
             # Move to node with the smallest f value
             cx, cy, ct = heapq.heappop(open)[1]
             cur = nodes[ct][cy][cx]
 
+            '''path = get_path(cur, start)
+            viz.paths[agent.num] = path
+            viz.show_paths()'''
+
             # Goal reached
             if cur == end:
-                print('Path found in {}'.format(timer() - start_time))
-                path = get_path(cur, start)
+                print('--> Path found in {}'.format(timer() - start_time))
+                path = get_path(cur, end)
                 return path
 
             closed.add(cur)
@@ -83,7 +86,7 @@ class AStarPathFinder:
                     neighbor.f = neighbor.g + neighbor.h
                     heapq.heappush(open, (neighbor.f, (nx, ny, nt)))
 
-        print('No solution found in {} time steps'.format(self.reservations.time))
+        print('--> No solution found in {} time steps'.format(self.reservations.time))
         return [(start.x, start.y, t) for t in range(self.reservations.time)]
 
     def get_valid_neighbors(self, cur, nodes, start):

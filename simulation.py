@@ -46,7 +46,6 @@ class OpenGl_Viz(object):
 
     def initialize(self, agents):
         self.timer.timeout.connect(self.show_agents)
-        self.timer.setSingleShot(True)
         self.timer.start()
 
         start_color = np.array([0.0, 1.0, 0.0, 1.0]).reshape((1, 4))
@@ -76,9 +75,9 @@ class OpenGl_Viz(object):
 
         self.app.processEvents()
 
-    def update(self):
+    def move_agents(self):
         '''
-        Move each agent
+        Move each agent to its next time step
         '''
 
         # Move agents
@@ -107,18 +106,19 @@ class OpenGl_Viz(object):
 
             points = np.array(points).reshape((-1, 3))
             path_line = gl.GLLinePlotItem(pos = points, width = 7, mode = 'line_strip', antialias=True)
+
             self.w.addItem(path_line)
 
         self.app.processEvents()
 
-    def animate(self, paths):
+
+    def simulate(self, paths):
         """
-        calls the update method to run in a loop
+        calls the move_agents method to run in a loop
         """
 
         self.paths = paths
-        self.timer.setSingleShot(False)
-        self.timer.timeout.connect(self.update)
+        self.timer.timeout.connect(self.move_agents)
         self.timer.start(500)
         self.start()
-        self.update()
+        self.move_agents()
