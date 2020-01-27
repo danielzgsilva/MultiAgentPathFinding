@@ -1,6 +1,10 @@
 import numpy as np
 from pyqtgraph.Qt import QtCore, QtGui
 import pyqtgraph.opengl as gl
+import PyQt5 as Qt
+from PyQt5.QtWidgets import QApplication, QHBoxLayout, QLabel, QSizePolicy, QSlider, QSpacerItem, \
+    QVBoxLayout, QWidget
+
 import sys
 import matplotlib as plt
 import random as rand
@@ -15,12 +19,12 @@ class OpenGl_Viz(object):
         self.max_time = max_time
         self.t = 0
         self.agents = {}
-        self.goals = []
         self.timer = QtCore.QTimer()
 
         # setup the view window
         self.app = QtGui.QApplication(sys.argv)
         self.w = gl.GLViewWidget()
+        self.w.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         self.w.setGeometry(0, 0, 1920, 1080)
         self.w.show()
         self.w.setWindowTitle('Multi Agent Path Finding')
@@ -46,9 +50,6 @@ class OpenGl_Viz(object):
             QtGui.QApplication.instance().exec_()
 
     def initialize(self, agents):
-        self.timer.timeout.connect(self.show_agents)
-        self.timer.start()
-
         start_color = np.array([0.0, 1.0, 0.0, 1.0]).reshape((1, 4))
         end_color = np.array([1.0, 0.0, 0.0, 1.0]).reshape((1, 4))
 
@@ -58,23 +59,36 @@ class OpenGl_Viz(object):
 
             agent_symbol = gl.GLScatterPlotItem(pos = start, color = start_color, size = 20)
             self.agents[agent.num] = agent_symbol
+            self.w.addItem(agent_symbol)
 
             end = np.array([agent.fy - self.map.rows // 2, agent.fx - self.map.cols // 2,
                             self.map.grid[agent.fy][agent.fx]]).reshape((1, 3))
 
             goal = gl.GLScatterPlotItem(pos = end, color = end_color, size = 20)
-            self.goals.append(goal)
-
-        self.show_agents()
-
-    def show_agents(self):
-        for agent_symbol in self.agents.values():
-            self.w.addItem(agent_symbol)
-
-        for goal in self.goals:
             self.w.addItem(goal)
 
         self.app.processEvents()
+
+    def show_path(self, cur_agent = None, cur_path=None):
+
+        self.erase_path(cur_path)
+        cur_path = None
+
+        points = []
+        for node in self.paths[cur_agent]:
+            point = [node[1] - self.map.rows // 2, node[0] - self.map.cols // 2,
+                              self.map.grid[node[1]][node[0]]]
+            points.append(point)
+
+        points = np.array(points).reshape((-1, 3))
+        path_line = gl.GLLinePlotItem(pos = points, width = 4, mode = 'line_strip', antialias=True)
+
+        cur_path = path_line
+
+        self.w.addItem(path_line)
+
+        self.app.processEvents()
+        return cur_path
 
     def move_agents(self):
         '''
@@ -94,23 +108,10 @@ class OpenGl_Viz(object):
             elif self.t >= self.max_time:
                 self.t = 0
                 self.timer.stop()
-                self.show_paths()
 
-    def show_paths(self):
-        for path in self.paths.values():
-            points = []
-            for node in path:
-                point = [node[1] - self.map.rows // 2, node[0] - self.map.cols // 2,
-                                  self.map.grid[node[1]][node[0]]]
-                points.append(point)
-
-            points = np.array(points).reshape((-1, 3))
-            path_line = gl.GLLinePlotItem(pos = points, width = 7, mode = 'line_strip', antialias=True)
-
-            self.w.addItem(path_line)
-
-        self.app.processEvents()
-
+    def erase_path(self, path):
+        if path:
+            self.w.removeItem(path)
 
     def simulate(self, paths):
         """

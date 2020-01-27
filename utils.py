@@ -4,6 +4,7 @@ import noise
 from opensimplex import OpenSimplex
 import random as rand
 
+rand.seed(41)
 def euclidean(a, b):
     '''
     Returns the 3D euclidean distance between 2 nodes

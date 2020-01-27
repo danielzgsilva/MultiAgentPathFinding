@@ -44,6 +44,7 @@ class AStarPathFinder:
 
         heapq.heappush(open, (start.f, (agent.sx, agent.sy, 0)))
 
+        path_viz = None
         while open:
             # Move to node with the smallest f value
             cx, cy, ct = heapq.heappop(open)[1]
@@ -52,7 +53,7 @@ class AStarPathFinder:
             if viz:
                 path = get_path(cur, start)
                 viz.paths[agent.num] = path
-                viz.show_paths()
+                path_viz = viz.show_path(agent.num, path_viz)
 
             # Goal reached
             if cur == end:
@@ -85,6 +86,7 @@ class AStarPathFinder:
                     neighbor.f = neighbor.g + neighbor.h
                     heapq.heappush(open, (neighbor.f, (nx, ny, nt)))
 
+        viz.erase_path(path_viz)
         print('--> No solution found in {} with {} possible time steps'.format(timer() - start_time, self.reservations.time))
         return [(start.x, start.y, t) for t in range(self.reservations.time)]
 
