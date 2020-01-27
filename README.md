@@ -21,10 +21,10 @@ Start off by cloning the repo:
 Navigate to the project's root and install dependencies into a conda environment like so:  
 `conda env create -f environment.yml`
 
-Activate the environment
+Activate the environment  
 `conda activate path_finding`
 
-Run the visualization with
+Run the visualization with  
 `python run.py`
 
 Available commands are:
