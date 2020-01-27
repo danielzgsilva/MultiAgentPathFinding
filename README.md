@@ -18,8 +18,14 @@ This visualization runs on Python 3.7
 Start off by cloning the repo:  
 `git clone https://github.com/danielzgsilva/MultiAgentPathFinding`
 
-Navigate to the project's root and install dependencies like so:  
-`pip install -r requirements.txt`
+Navigate to the project's root and install dependencies into a conda environment like so:  
+`conda env create -f environment.yml`
+
+Activate the environment
+`conda activate path_finding'
+
+Run the visualization with
+`python run.py'
 
 Available commands are:
 - **--num_agents** | number of agents to spawn into the world | REQUIRED
@@ -31,7 +37,7 @@ Available commands are:
 - **--map_type** | type of map to create (plains, mountains, canyons, default - combined)
 - **--no_viz** | if set, the visualization will not run, only a list of paths will be returned
                  
-Run the visualization like so:  
+Full run statement like so:  
 `python run.py --num_agents 2 --starts 0,0 5,5 --goals 49,49 45,45 --max_time 30`
 
 ## Work in progress:
