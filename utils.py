@@ -28,7 +28,7 @@ def get_path(cur, start):
         cur = cur.previous
 
         if cur is None:
-            raise AssertionError('Unable to backtrack to start node.')
+            raise ValueError('Unable to backtrack to start node.')
 
     path.append((start.x, start.y, 0))
     return path[::-1]

@@ -49,10 +49,10 @@ class AStarPathFinder:
             cx, cy, ct = heapq.heappop(open)[1]
             cur = nodes[ct][cy][cx]
 
-            '''if viz:
+            if viz:
                 path = get_path(cur, start)
                 viz.paths[agent.num] = path
-                viz.show_paths()'''
+                viz.show_paths()
 
             # Goal reached
             if cur == end:

@@ -12,8 +12,17 @@ if __name__ == '__main__':
     # Create elevation map
     map = ElevationMap(opts.height, opts.width, opts.map_type, initial_grid=None)
 
+    # Error handling
     if opts.num_agents != len(opts.starts) or opts.num_agents != len(opts.goals):
-        raise AssertionError('Number of agents does not match number of start or goal coordinates')
+        raise ValueError('Number of agents does not match number of start or goal coordinates')
+
+    for x, y in opts.starts:
+        if x < 0 or y < 0 or x >= opts.width or y >= opts.height:
+            raise ValueError('Start coordinate out of range')
+
+    for x, y in opts.goals:
+        if x < 0 or y < 0 or x >= opts.width or y >= opts.height:
+            raise ValueError('Goal coordinate out of range')
 
     # Create some agents
     agents = list()
