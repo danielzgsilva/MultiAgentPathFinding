@@ -11,12 +11,10 @@ class ElevationMap:
     '''
     Stores a grid of Nodes as well as the elevation map being used
     '''
-    def __init__(self, w, h, rows, cols, initial_grid = None):
-        self.w = w
-        self.h = h
+    def __init__(self, rows, cols, map_type, initial_grid = None):
         self.rows = rows
         self.cols = cols
-
+        self.map_type = map_type
         self.grid = None
 
         # Use given elevation map or create random
@@ -26,7 +24,7 @@ class ElevationMap:
 
             self.grid = initial_grid
         else:
-            self.grid = terrain_map(cols, rows)
+            self.grid = elevation_map(cols, rows, self.map_type)
 
     def animate(self, agents, paths, vid_path, t):
         for path in paths.values():

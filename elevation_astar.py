@@ -23,20 +23,16 @@ class AStarPathFinder:
         Finds the least cost path from start to finish coordinates on an elevation map
         '''
 
-        start = timer()
-        nodes = [[[None for _ in range(self.map.cols)] for _ in range(self.map.rows)] for _ in range(self.reservations.time)]
-        #print('Finished Instantiating node array in {}'.format(timer() - start))
+        start_time = timer()
 
-        start = timer()
+        nodes = [[[None for _ in range(self.map.cols)] for _ in range(self.map.rows)] for _ in range(self.reservations.time)]
+
         for x in range(self.map.cols):
             for y in range(self.map.rows):
                 for t in range(self.reservations.time):
                     z = self.map.grid[y][x]
                     nodes[t][y][x] = Node(x, y, z, t)
 
-        #print('Finished creating nodes in {}'.format(timer() - start))
-
-        start_time = timer()
         open = []
         closed = set()
 
@@ -53,14 +49,17 @@ class AStarPathFinder:
             cx, cy, ct = heapq.heappop(open)[1]
             cur = nodes[ct][cy][cx]
 
-            '''path = get_path(cur, start)
-            viz.paths[agent.num] = path
-            viz.show_paths()'''
+            '''if viz:
+                path = get_path(cur, start)
+                viz.paths[agent.num] = path
+                viz.show_paths()'''
 
             # Goal reached
             if cur == end:
                 print('--> Path found in {}'.format(timer() - start_time))
-                path = get_path(cur, end)
+
+                # Build path by backtracking from current node to the start node
+                path = get_path(cur, start)
                 return path
 
             closed.add(cur)
@@ -86,7 +85,7 @@ class AStarPathFinder:
                     neighbor.f = neighbor.g + neighbor.h
                     heapq.heappush(open, (neighbor.f, (nx, ny, nt)))
 
-        print('--> No solution found in {} time steps'.format(self.reservations.time))
+        print('--> No solution found in {} with {} possible time steps'.format(timer() - start_time, self.reservations.time))
         return [(start.x, start.y, t) for t in range(self.reservations.time)]
 
     def get_valid_neighbors(self, cur, nodes, start):
@@ -154,7 +153,5 @@ class AStarPathFinder:
             (self.reservations.is_blocked(neighbor.x, cur.y, neighbor.t) and self.reservations.is_blocked(cur.x, neighbor.y, cur.t))):
                # print('caught diagonal collision')
                 return False
-
-
 
         return True

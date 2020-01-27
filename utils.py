@@ -10,6 +10,13 @@ def euclidean(a, b):
     '''
     return np.sqrt((b.x - a.x) ** 2 + (b.y - a.y) ** 2 + (b.z - a.z) ** 2)
 
+def coords(s):
+    try:
+        x, y = map(int, s.split(','))
+        return x, y
+    except:
+        raise TypeError("Coordinates must be x,y")
+
 
 def get_path(cur, start):
     '''
@@ -129,10 +136,20 @@ def combined():
 
     return noise
 
-def terrain_map(cols, rows):
+def elevation_map(cols, rows, map_type):
     z_grid = np.empty((rows, cols))
+    func = None
 
-    func = combined()
+    if map_type == 'mountains':
+        func = mountains()
+    elif map_type == 'plains':
+        func = plains()
+    elif map_type == 'canyons':
+        func = simple_scurve()
+    elif map_type == 'combined':
+        func = combined()
+    else:
+        raise ValueError('Map type not supported.')
 
     for x in range(cols):
         for y in range(rows):

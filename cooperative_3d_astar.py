@@ -1,38 +1,38 @@
 from elevation_astar import AStarPathFinder
-from map import ElevationMap
 from reservation_table import ReservationTable
-from agent import Agent
 from timeit import default_timer as timer
 from simulation import OpenGl_Viz
 
+
 class CooperativePathFinder:
-    def __init__(self, map, agents, max_time):
+    def __init__(self, map, agents, max_time, no_viz):
         self.map = map
         self.agents = agents
         self.max_time = max_time
-        self.viz = OpenGl_Viz(map)
-        self.viz.max_time = max_time
+        self.viz = None
+
+        if not no_viz:
+            self.viz = OpenGl_Viz(map, max_time)
 
     def find_paths(self):
-
         start = timer()
 
         # Create time-space reservation table
         reservations = ReservationTable(self.map.cols, self.map.rows, self.max_time)
-        #print(np.array(reservations.table))
 
-        #print('Created reservation table in {}'.format(timer() - start))
-        paths = {}
+        paths = dict()
 
         # Initialize agent start locations
         for agent in self.agents:
             paths[agent.num] = []
-            for t in range(reservations.time):
+            for t in range(self.max_time):
                 reservations.set_blocked(agent.sx, agent.sy, t)
 
-        self.viz.initialize(self.agents)
+        # Initialize and display elevation map and agents
+        if self.viz:
+            self.viz.initialize(self.agents)
 
-        print('Planning paths for {} agents'.format(len(agents)))
+        print('Planning paths for {} agents'.format(len(self.agents)))
         for agent in self.agents:
             print('--> Agent {} starting at {} going to {}'.format(agent.num, (agent.sx, agent.sy), (agent.fx, agent.fy)))
             path_finder = AStarPathFinder(reservations, self.map)
@@ -58,33 +58,8 @@ class CooperativePathFinder:
                 reservations.unblock(agent.sx, agent.sy, ft)
                 ft += 1
 
-        self.viz.simulate(paths)
+        # Simulate agent's moving along their paths
+        if self.viz:
+            self.viz.simulate(paths)
+
         return paths
-
-if __name__ == "__main__":
-    options = SVHN_Options()
-    opts = options.parse()
-
-    rows = 20
-    cols = 20
-    # Create random elevation map
-    map = ElevationMap(w=400, h=400, rows=rows, cols=cols, initial_grid=None)
-
-    # Create some agents
-    agents = list()
-    agents.append(Agent(0, 0, 0, cols-1, rows-1))
-    '''agents.append(Agent(1, 0, rows-1, cols-1, 0))
-    agents.append(Agent(2, cols-1, 1, 1, rows - 1))
-    agents.append(Agent(3, cols-2, rows-1, 0, 1))'''
-
-    # Arbitrary max time limit
-    max_time = (rows + cols)
-
-    # Plan paths for the agents
-    agent_planner = CooperativePathFinder(map, agents, max_time)
-    paths = agent_planner.find_paths()
-
-    # Display map and paths
-    #vid_path = os.path.join(os.getcwd(), 'simulations')
-    #map.animate(agents, paths, vid_path, agent_planner.max_time)
-    #map.show_grid(agents, paths)

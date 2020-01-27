@@ -6,13 +6,13 @@ import matplotlib as plt
 import random as rand
 
 class OpenGl_Viz(object):
-    def __init__(self, map):
+    def __init__(self, map, max_time):
         """
         Initialize the graphics window and mesh
         """
         self.map = map
         self.paths = {}
-        self.max_time = None
+        self.max_time = max_time
         self.t = 0
         self.agents = {}
         self.goals = []
@@ -26,14 +26,15 @@ class OpenGl_Viz(object):
         self.w.setWindowTitle('Multi Agent Path Finding')
         self.w.setCameraPosition(distance = 50, elevation = 50, azimuth = 225)
 
+        # Set up 3d surface plot
         x = np.arange(0, map.cols) - map.cols // 2
         y = np.arange(0, map.rows) - map.rows // 2
-
         cmap = plt.cm.get_cmap('jet')
         minZ = np.min(map.grid)
         maxZ = np.max(map.grid)
         rgba_img = cmap((map.grid - minZ) / (maxZ - minZ))
 
+        # Create and display surface plot
         self.surface = gl.GLSurfacePlotItem(x = y, y = x, z = map.grid, colors = rgba_img)
         self.w.addItem(self.surface)
 
@@ -83,7 +84,6 @@ class OpenGl_Viz(object):
         # Move agents
         for agent, agent_symbol in self.agents.items():
             path = self.paths[agent]
-
             if path and self.t < self.max_time:
                 point = np.array([path[self.t][1] - self.map.rows // 2, path[self.t][0] - self.map.cols // 2,
                                   self.map.grid[path[self.t][1]][path[self.t][0]]]).reshape((1, 3))
