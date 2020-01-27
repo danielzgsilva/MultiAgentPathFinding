@@ -7,7 +7,10 @@
    - Supports the creation of four different biomes: plains, mountains, canyons, and all three combined
 - Visualization built using PyQtGraph and OpenGL
 
-<img src='example.PNG' width="400" height="400" alt='An example visualization' />
+
+<p align="center">
+  <img src='example.PNG' width="400" height="400" alt='An example visualization' />
+</p>
 
 ## Usage
 This visualization runs on Python 3.7
