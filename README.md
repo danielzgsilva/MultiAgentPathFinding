@@ -1,5 +1,6 @@
 # Multi Agent Path Finding Visualization
 
+## This is a visualization of multi-agent path finding on 3D terrain maps
 - Built for 3D elevation map
 -  Implements David Silver's cooperative A* MAPF algorithm in 3 dimensions
    - http://www0.cs.ucl.ac.uk/staff/D.Silver/web/Applications_files/coop-path-AIIDE.pdf
