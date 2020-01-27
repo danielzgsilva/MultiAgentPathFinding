@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QApplication, QHBoxLayout, QLabel, QSizePolicy, QSli
     QVBoxLayout, QWidget
 
 import sys
-import matplotlib as plt
+import matplotlib.pyplot as plt
 import random as rand
 
 class OpenGl_Viz(object):

@@ -1,5 +1,5 @@
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import noise
 from opensimplex import OpenSimplex
 import random as rand
@@ -35,11 +35,11 @@ def get_path(cur, start):
     return path[::-1]
 
 
-def get_cmap(n, name='RdGy'):
-    '''Returns a function that maps each index in 0, 1, ..., n-1 to a distinct
-    RGB color; the keyword argument name must be a standard mpl colormap name.'''
+'''def get_cmap(n, name='RdGy'):
+    Returns a function that maps each index in 0, 1, ..., n-1 to a distinct
+    RGB color; the keyword argument name must be a standard mpl colormap name.
 
-    return plt.cm.get_cmap(name, n)
+    return plt.cm.get_cmap(name, n)'''
 
 
 def simple_noise(x, y):
